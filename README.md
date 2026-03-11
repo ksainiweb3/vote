@@ -1,36 +1,230 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# On-Chain Voting dApp (Solana + Anchor + Next.js)
 
-## Getting Started
+A decentralized voting application built on **Solana** using **Anchor** for the smart contract and **Next.js** for the frontend.
 
-First, run the development server:
+Users can:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Create polls
+- Add candidates/options
+- Vote on-chain
+- View poll results transparently
+
+All votes are recorded **directly on the Solana blockchain**, ensuring transparency and immutability.
+
+---
+
+# Features
+
+- Create polls on-chain
+- Add multiple candidates to a poll
+- Vote for a candidate
+- Prevent double voting per poll
+- View total votes and poll details
+- Wallet integration using Solana Wallet Adapter
+- Fully decentralized data storage on Solana accounts
+
+---
+
+# Tech Stack
+
+Frontend
+
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- Solana Wallet Adapter
+- Anchor Web3.js
+
+Smart Contract
+
+- Rust
+- Anchor Framework
+- Solana Program
+
+---
+
+# Solana Account Architecture
+
+The application uses the following account structure:
+
+Poll PDA
+
+```
+["poll", poll_title, creator_pubkey]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Candidate PDA
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+["candidate", poll_pubkey, candidate_index]
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Vote PDA
 
-## Learn More
+```
+["vote", poll_pubkey, voter_pubkey]
+```
 
-To learn more about Next.js, take a look at the following resources:
+This structure ensures:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Unlimited candidates per poll
+- One vote per user per poll
+- Efficient querying of poll data
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+# Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+frontend
+ ├─ app
+ │   └─ page.tsx        # main UI
+ │
+ ├─ hooks
+ │   └─ useProgram.ts   # Anchor program connection
+ │
+ ├─ components
+ │   └─ wallet provider
+ │
+ └─ styles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+program
+ ├─ programs/voting
+ │   ├─ instructions
+ │   │   ├─ init_poll.rs
+ │   │   ├─ init_candidate.rs
+ │   │   └─ vote.rs
+ │   │
+ │   └─ state
+ │       ├─ poll.rs
+ │       ├─ candidate.rs
+ │       └─ vote.rs
+```
+
+---
+
+# Getting Started
+
+## 1 Install dependencies
+
+```
+npm install
+```
+
+---
+
+## 2 Run Solana local validator
+
+```
+solana-test-validator
+```
+
+---
+
+## 3 Deploy the program
+
+```
+anchor build
+anchor deploy
+```
+
+Update the program ID in the frontend if needed.
+
+---
+
+## 4 Run the frontend
+
+```
+npm run dev
+```
+
+Open:
+
+```
+http://localhost:3000
+```
+
+---
+
+# How the App Works
+
+### Creating a Poll
+
+User creates a poll by submitting a title.
+
+Transaction:
+
+```
+init_poll(title)
+```
+
+Creates a **Poll PDA**.
+
+---
+
+### Adding Candidates
+
+After creating a poll, users can add candidates.
+
+Transaction:
+
+```
+init_candidate(title)
+```
+
+Creates a **Candidate PDA** linked to the poll.
+
+---
+
+### Voting
+
+When a user votes:
+
+1. Vote PDA is created
+2. Candidate vote count increments
+3. Poll total vote count increments
+
+Transaction:
+
+```
+init_vote()
+```
+
+Vote PDA prevents double voting.
+
+---
+
+# Security
+
+The program prevents:
+
+- Double voting using Vote PDA
+- Voting for candidates from another poll
+- Unauthorized poll mutation
+
+---
+
+# Future Improvements
+
+- Live vote updates using account subscriptions
+- Poll expiration time
+- DAO-style governance voting
+- Indexing using Helius or Triton
+- Mobile responsive UI
+
+---
+
+# Screenshots
+
+Add screenshots of:
+
+- Poll creation
+- Candidate list
+- Voting modal
+- Results view
+
+---
+
+# License
+
+MIT License
