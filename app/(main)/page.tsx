@@ -248,7 +248,7 @@ const LandingPage = () => {
           </div>
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-3 gap-4">
-              {allPolls.map((poll) => (
+              {allPolls.map((poll: any) => (
                 <div
                   onClick={() => handlePollClick(poll.publicKey)}
                   className="p-6 border flex flex-col gap-4 rounded-lg border-neutral-600 hover:cursor-pointer hover:bg-neutral-900"
